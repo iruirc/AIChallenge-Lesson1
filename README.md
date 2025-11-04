@@ -230,7 +230,7 @@ src/main/kotlin/com/example/
 | Переменная | Обязательная | По умолчанию | Описание |
 |-----------|--------------|--------------|----------|
 | `CLAUDE_API_KEY` | ✅ Да | - | API ключ Claude |
-| `CLAUDE_MODEL` | ❌ Нет | `claude-3-5-sonnet-20241022` | Модель Claude |
+| `CLAUDE_MODEL` | ❌ Нет | `claude-haiku-4-5-20251001` | Модель Claude |
 | `CLAUDE_MAX_TOKENS` | ❌ Нет | `1024` | Максимум токенов в ответе |
 | `CLAUDE_TEMPERATURE` | ❌ Нет | `1.0` | Температура генерации (0.0-1.0) |
 
