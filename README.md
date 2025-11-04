@@ -133,101 +133,77 @@ http POST localhost:8080/chat message="Привет, Claude!"
 http GET localhost:8080/health
 ```
 
-## Деплой на VPS
+## Запуск через Docker
 
-### 1. Подготовка сервера
-
-```bash
-# Обновите систему
-sudo apt update && sudo apt upgrade -y
-
-# Установите Java 17+
-sudo apt install openjdk-17-jre -y
-
-# Проверьте версию
-java -version
-```
-
-### 2. Сборка приложения
+### Локальный запуск
 
 ```bash
-./gradlew buildFatJar
+# Создайте .env файл с вашим API ключом
+echo "CLAUDE_API_KEY=your_key_here" > .env
+
+# Запустите контейнер
+docker-compose up -d
+
+# Просмотр логов
+docker-compose logs -f
+
+# Остановка
+docker-compose down
 ```
 
-### 3. Загрузите на сервер
+Приложение будет доступно по адресу: `http://localhost:8080`
+
+### Сборка Docker образа
 
 ```bash
-scp build/libs/ktor-firtsAI-0.0.1-all.jar user@your-vps-ip:/opt/claude-chat/
+# Сборка образа
+docker-compose build
+
+# Или без кэша
+docker-compose build --no-cache
+
+# Запуск
+docker-compose up -d
 ```
 
-### 4. Создайте systemd service
+## Деплой на VPS через Docker
+
+### Быстрый старт
+
+**На VPS сервере:**
 
 ```bash
-sudo nano /etc/systemd/system/claude-chat.service
+# 1. Установите Docker и Docker Compose
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# 2. Клонируйте проект
+git clone https://github.com/your-repo/ktor-firtsAI.git
+cd ktor-firtsAI
+
+# 3. Настройте переменные окружения
+nano .env
+# Добавьте: CLAUDE_API_KEY=your_key_here
+
+# 4. Запустите
+docker-compose up -d
+
+# 5. Настройте Nginx (опционально, для домена и HTTPS)
+# См. подробную инструкцию в DEPLOYMENT.md
 ```
 
-Содержимое файла:
-```ini
-[Unit]
-Description=Claude Chat API Server
-After=network.target
+### Подробная инструкция
 
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/opt/claude-chat
-ExecStart=/usr/bin/java -jar /opt/claude-chat/ktor-firtsAI-0.0.1-all.jar
-Restart=on-failure
-Environment="CLAUDE_API_KEY=your_api_key_here"
+📖 **Полное руководство по деплою находится в [DEPLOYMENT.md](DEPLOYMENT.md)**
 
-[Install]
-WantedBy=multi-user.target
-```
-
-### 5. Запустите сервис
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable claude-chat
-sudo systemctl start claude-chat
-sudo systemctl status claude-chat
-```
-
-### 6. Настройте Nginx (опционально)
-
-```bash
-sudo apt install nginx -y
-sudo nano /etc/nginx/sites-available/claude-chat
-```
-
-Содержимое:
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-```
-
-Активируйте конфигурацию:
-```bash
-sudo ln -s /etc/nginx/sites-available/claude-chat /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-### 7. SSL сертификат (Let's Encrypt)
-
-```bash
-sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d your-domain.com
-```
+Инструкция включает:
+- Подготовку VPS сервера (Ubuntu)
+- Установку Docker и Docker Compose
+- Настройку Nginx как reverse proxy
+- Получение SSL сертификата (Let's Encrypt)
+- Мониторинг и управление контейнерами
+- Резервное копирование
+- Устранение проблем
 
 ## Структура проекта
 

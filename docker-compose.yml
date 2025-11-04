@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  claude-chat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: claude-chat:latest
+    container_name: claude-chat-app
+    restart: unless-stopped
+
+    # Порты
+    ports:
+      - "8080:8080"
+
+    # Переменные окружения
+    environment:
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-haiku-4-5-20251001}
+      - CLAUDE_MAX_TOKENS=${CLAUDE_MAX_TOKENS:-1024}
+      - CLAUDE_TEMPERATURE=${CLAUDE_TEMPERATURE:-1.0}
+
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Ограничения ресурсов
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Логирование
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Сеть
+    networks:
+      - claude-network
+
+networks:
+  claude-network:
+    driver: bridge

@@ -1,0 +1,53 @@
+# Build artifacts
+build/
+.gradle/
+.kotlin/
+*.jar
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+out/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (optional, exclude if not needed in image)
+*.md
+!README.md
+
+# Docker files themselves
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# Test files
+**/test/
+**/*Test.kt
+**/*Spec.kt
