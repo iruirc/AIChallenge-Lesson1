@@ -16,9 +16,10 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    // Инициализация ClaudeService
+    // Инициализация сервисов
     val claudeConfig = getClaudeConfig()
     val claudeService = ClaudeService(claudeConfig)
+    val sessionManager = com.example.services.SessionManager()
 
     // Закрытие клиента при остановке приложения
     monitor.subscribe(ApplicationStopped) {
@@ -49,5 +50,5 @@ fun Application.module() {
     }
 
     // Конфигурация роутинга
-    configureRouting(claudeService)
+    configureRouting(claudeService, sessionManager)
 }

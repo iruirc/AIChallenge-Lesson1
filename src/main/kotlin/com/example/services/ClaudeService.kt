@@ -32,22 +32,31 @@ class ClaudeService(private val config: ClaudeConfig) {
     }
 
     suspend fun sendMessage(userMessage: String): String {
+        return sendMessageWithHistory(userMessage, emptyList())
+    }
+
+    /**
+     * Send a message to Claude API with conversation history
+     * @param userMessage The current user message
+     * @param messageHistory Previous messages in the conversation
+     * @return Claude's response text
+     */
+    suspend fun sendMessageWithHistory(userMessage: String, messageHistory: List<ClaudeMessage>): String {
         return try {
-            logger.info("Sending message to Claude API: $userMessage")
+            logger.info("Sending message to Claude API with ${messageHistory.size} history messages")
+
+            // Build messages list: history + new user message
+            val messages = messageHistory.toMutableList()
+            messages.add(ClaudeMessage(role = "user", content = userMessage))
 
             val claudeRequest = ClaudeRequest(
                 model = config.model,
                 maxTokens = config.maxTokens,
-                messages = listOf(
-                    ClaudeMessage(
-                        role = "user",
-                        content = userMessage
-                    )
-                ),
+                messages = messages,
                 temperature = config.temperature
             )
 
-            logger.info("Claude Request: model=${config.model}, maxTokens=${config.maxTokens}")
+            logger.info("Claude Request: model=${config.model}, maxTokens=${config.maxTokens}, totalMessages=${messages.size}")
 
             val httpResponse: HttpResponse = client.post(config.apiUrl) {
                 header("x-api-key", config.apiKey)
@@ -74,7 +83,7 @@ class ClaudeService(private val config: ClaudeConfig) {
             val response: ClaudeResponse = httpResponse.body()
             val responseText = response.content.firstOrNull()?.text ?: "No response from Claude"
 
-            logger.info("Successfully received response from Claude API")
+            logger.info("Successfully received response from Claude API (input: ${response.usage.inputTokens}, output: ${response.usage.outputTokens} tokens)")
             responseText
 
         } catch (e: Exception) {

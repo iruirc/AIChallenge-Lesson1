@@ -2,13 +2,14 @@ package com.example
 
 import com.example.routes.chatRoutes
 import com.example.services.ClaudeService
+import com.example.services.SessionManager
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(claudeService: ClaudeService) {
+fun Application.configureRouting(claudeService: ClaudeService, sessionManager: SessionManager) {
     routing {
         // Главная страница - перенаправление на index.html
         get("/") {
@@ -16,7 +17,7 @@ fun Application.configureRouting(claudeService: ClaudeService) {
         }
 
         // API роуты для чата
-        chatRoutes(claudeService)
+        chatRoutes(claudeService, sessionManager)
 
         // Статические файлы (HTML, CSS, JS)
         staticResources("/", "static")
