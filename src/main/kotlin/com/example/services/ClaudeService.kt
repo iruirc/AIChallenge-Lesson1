@@ -32,6 +32,18 @@ class ClaudeService(private val config: ClaudeConfig) {
     }
 
     /**
+     * Cleans JSON response by removing markdown code block markers
+     */
+    private fun cleanJsonResponse(response: String): String {
+        return response
+            .trim()
+            .removePrefix("```json")
+            .removePrefix("```")
+            .removeSuffix("```")
+            .trim()
+    }
+
+    /**
      * Enhances user message with plain text formatting instructions
      */
     private fun enhanceMessageForPlainText(userMessage: String): String {
@@ -39,12 +51,41 @@ class ClaudeService(private val config: ClaudeConfig) {
     }
 
     /**
+     * Creates JSON template for response formatting
+     */
+    private fun createJsonTemplate(): String {
+        return """{
+  "title": "здесь краткое описание запроса",
+  "source_request": "здесь исходный запрос"
+  "answer": "здесь ответ за запрос"
+}"""
+    }
+
+    /**
      * Enhances user message with JSON formatting instructions
      */
-    private fun enhanceMessageForJson(userMessage: String): String {
-        return """$userMessage
+    private fun enhanceMessageForJson(userMessage: String, format_template: String): String {
+        return """Ответь ТОЛЬКО в формате JSON, без дополнительного текста.
 
-Please format your response as valid JSON. Structure the response appropriately based on the content."""
+Требуемый формат ответа:
+$format_template
+
+Запрос пользователя: $userMessage
+
+ВАЖНО:
+- Ответ должен быть валидным JSON
+- Не добавляй никакого текста до и после JSON
+- Используй только указанные ключи
+- Не добавляй лидирующие и финальные символы ``` Если они есть - удали их
+
+ПРИМЕР ВАЛИДНОГО ОТВЕТА:
+{
+  "title": "Расположение Древнего Рима",
+  "source_request": "Где находится Древний Рим",
+  "answer": "Древний Рим находился на территории современной Италии, в центральной части Апеннинского полуострова"
+}
+
+"""
     }
 
     /**
@@ -62,7 +103,7 @@ Please format your response as valid XML. Use appropriate tags and structure bas
     private fun enhanceMessage(userMessage: String, format: ResponseFormat): String {
         return when (format) {
             ResponseFormat.PLAIN_TEXT -> enhanceMessageForPlainText(userMessage)
-            ResponseFormat.JSON -> enhanceMessageForJson(userMessage)
+            ResponseFormat.JSON -> enhanceMessageForJson(userMessage, createJsonTemplate())
             ResponseFormat.XML -> enhanceMessageForXml(userMessage)
         }
     }
@@ -111,9 +152,16 @@ Please format your response as valid XML. Use appropriate tags and structure bas
             }
 
             val response: ClaudeResponse = httpResponse.body()
-            val responseText = response.content.firstOrNull()?.text ?: "No response from Claude"
+            var responseText = response.content.firstOrNull()?.text ?: "No response from Claude"
+            logger.info("response = $responseText")
+
+            // Clean JSON response if format is JSON
+            if (format == ResponseFormat.JSON) {
+                responseText = cleanJsonResponse(responseText)
+            }
 
             logger.info("Successfully received response from Claude API")
+            logger.info("fix response = $responseText")
             responseText
 
         } catch (e: Exception) {
