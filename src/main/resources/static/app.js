@@ -7,6 +7,7 @@ const messagesContainer = document.getElementById('messagesContainer');
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const statusElement = document.getElementById('status');
+const formatSelect = document.getElementById('formatSelect');
 
 // Состояние
 let isLoading = false;
@@ -60,13 +61,16 @@ async function handleSendMessage() {
     updateStatus('Отправка запроса...');
 
     try {
+        // Получаем выбранный формат
+        const format = formatSelect.value;
+
         // Отправляем запрос к API с таймаутом
         const response = await fetchWithTimeout(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify({ message, format }),
         }, REQUEST_TIMEOUT);
 
         // Удаляем индикатор загрузки
@@ -175,6 +179,7 @@ function setLoading(loading) {
     isLoading = loading;
     sendButton.disabled = loading;
     messageInput.disabled = loading;
+    formatSelect.disabled = loading;
 }
 
 // Fetch с таймаутом

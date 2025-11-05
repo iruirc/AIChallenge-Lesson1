@@ -31,9 +31,48 @@ class ClaudeService(private val config: ClaudeConfig) {
         }
     }
 
-    suspend fun sendMessage(userMessage: String): String {
+    /**
+     * Enhances user message with plain text formatting instructions
+     */
+    private fun enhanceMessageForPlainText(userMessage: String): String {
+        return userMessage
+    }
+
+    /**
+     * Enhances user message with JSON formatting instructions
+     */
+    private fun enhanceMessageForJson(userMessage: String): String {
+        return """$userMessage
+
+Please format your response as valid JSON. Structure the response appropriately based on the content."""
+    }
+
+    /**
+     * Enhances user message with XML formatting instructions
+     */
+    private fun enhanceMessageForXml(userMessage: String): String {
+        return """$userMessage
+
+Please format your response as valid XML. Use appropriate tags and structure based on the content."""
+    }
+
+    /**
+     * Enhances user message based on the specified format
+     */
+    private fun enhanceMessage(userMessage: String, format: ResponseFormat): String {
+        return when (format) {
+            ResponseFormat.PLAIN_TEXT -> enhanceMessageForPlainText(userMessage)
+            ResponseFormat.JSON -> enhanceMessageForJson(userMessage)
+            ResponseFormat.XML -> enhanceMessageForXml(userMessage)
+        }
+    }
+
+    suspend fun sendMessage(userMessage: String, format: ResponseFormat = ResponseFormat.PLAIN_TEXT): String {
         return try {
             logger.info("Sending message to Claude API: $userMessage")
+            logger.info("Response format: $format")
+
+            val enhancedMessage = enhanceMessage(userMessage, format)
 
             val claudeRequest = ClaudeRequest(
                 model = config.model,
@@ -41,7 +80,7 @@ class ClaudeService(private val config: ClaudeConfig) {
                 messages = listOf(
                     ClaudeMessage(
                         role = "user",
-                        content = userMessage
+                        content = enhancedMessage
                     )
                 ),
                 temperature = config.temperature

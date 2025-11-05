@@ -20,7 +20,7 @@ fun Route.chatRoutes(claudeService: ClaudeService) {
                     return@post
                 }
 
-                val claudeResponse = claudeService.sendMessage(request.message)
+                val claudeResponse = claudeService.sendMessage(request.message, request.format)
                 call.respond(ChatResponse(response = claudeResponse))
 
             } catch (e: Exception) {

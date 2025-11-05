@@ -165,6 +165,41 @@ body {
     justify-content: center;
 }
 
+/* Селектор формата */
+.format-selector {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.format-selector label {
+    font-size: 14px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.format-select {
+    padding: 6px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.format-select:focus {
+    border-color: #667eea;
+}
+
+.format-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .input-wrapper {
     display: flex;
     gap: 12px;

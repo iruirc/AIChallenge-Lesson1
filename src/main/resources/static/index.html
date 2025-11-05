@@ -18,6 +18,14 @@
 
         <!-- Область ввода (1/5 высоты) -->
         <div class="input-container">
+            <div class="format-selector">
+                <label for="formatSelect">Формат ответа:</label>
+                <select id="formatSelect" class="format-select">
+                    <option value="PLAIN_TEXT" selected>Обычный текст</option>
+                    <option value="JSON">JSON</option>
+                    <option value="XML">XML</option>
+                </select>
+            </div>
             <div class="input-wrapper">
                 <textarea
                     id="messageInput"
