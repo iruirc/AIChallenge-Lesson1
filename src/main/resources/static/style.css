@@ -33,7 +33,7 @@ body {
 
 .sidebar-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 15px 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -49,23 +49,25 @@ body {
 .new-chat-button {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
     background: rgba(255, 255, 255, 0.2);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    padding: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .new-chat-button:hover {
     background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
+    transform: translateY(-1px);
 }
 
 .new-chat-button:active {
-    transform: scale(0.95);
+    transform: translateY(0);
 }
 
 .new-chat-button svg {
@@ -163,11 +165,6 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.chat-header h1 {
-    font-size: 24px;
-    font-weight: 600;
 }
 
 .chat-actions {
