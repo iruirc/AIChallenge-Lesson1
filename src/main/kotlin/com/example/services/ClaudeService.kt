@@ -44,6 +44,38 @@ class ClaudeService(private val config: ClaudeConfig) {
     }
 
     /**
+     * Processes plain text response
+     */
+    private fun processPlainTextResponse(responseText: String): String {
+        return responseText
+    }
+
+    /**
+     * Processes JSON response
+     */
+    private fun processJsonResponse(responseText: String): String {
+        return cleanJsonResponse(responseText)
+    }
+
+    /**
+     * Processes XML response
+     */
+    private fun processXmlResponse(responseText: String): String {
+        return responseText
+    }
+
+    /**
+     * Processes response based on the specified format
+     */
+    private fun processResponseByFormat(responseText: String, format: ResponseFormat): String {
+        return when (format) {
+            ResponseFormat.JSON -> processJsonResponse(responseText)
+            ResponseFormat.PLAIN_TEXT -> processPlainTextResponse(responseText)
+            ResponseFormat.XML -> processXmlResponse(responseText)
+        }
+    }
+
+    /**
      * Enhances user message with plain text formatting instructions
      */
     private fun enhanceMessageForPlainText(userMessage: String): String {
@@ -167,10 +199,7 @@ Please format your response as valid XML. Use appropriate tags and structure bas
             var responseText = response.content.firstOrNull()?.text ?: "No response from Claude"
             logger.info("response = $responseText")
 
-            // Clean JSON response if format is JSON
-            if (format == ResponseFormat.JSON) {
-                responseText = cleanJsonResponse(responseText)
-            }
+            responseText = processResponseByFormat(responseText, format)
 
             logger.info("Successfully received response from Claude API")
             logger.info("fix response = $responseText")
