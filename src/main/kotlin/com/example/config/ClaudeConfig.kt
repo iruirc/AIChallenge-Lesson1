@@ -10,13 +10,13 @@ data class ClaudeConfig(
 )
 
 fun getClaudeConfig(): ClaudeConfig {
-    val apiKey = System.getenv("CLAUDE_API_KEY")
+    val apiKey = System.getenv("CLAUDE_API_KEY") ?: System.getProperty("CLAUDE_API_KEY")
         ?: throw IllegalStateException("CLAUDE_API_KEY environment variable is not set")
 
     return ClaudeConfig(
         apiKey = apiKey,
-        model = System.getenv("CLAUDE_MODEL") ?: "claude-haiku-4-5-20251001",
-        maxTokens = System.getenv("CLAUDE_MAX_TOKENS")?.toIntOrNull() ?: 1024,
-        temperature = System.getenv("CLAUDE_TEMPERATURE")?.toDoubleOrNull() ?: 1.0
+        model = System.getenv("CLAUDE_MODEL") ?: System.getProperty("CLAUDE_MODEL") ?: "claude-haiku-4-5-20251001",
+        maxTokens = (System.getenv("CLAUDE_MAX_TOKENS") ?: System.getProperty("CLAUDE_MAX_TOKENS"))?.toIntOrNull() ?: 1024,
+        temperature = (System.getenv("CLAUDE_TEMPERATURE") ?: System.getProperty("CLAUDE_TEMPERATURE"))?.toDoubleOrNull() ?: 1.0
     )
 }
