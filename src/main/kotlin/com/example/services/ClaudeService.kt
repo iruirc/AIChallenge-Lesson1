@@ -96,12 +96,16 @@ class ClaudeService(private val config: ClaudeConfig) {
             val inputSource = InputSource(StringReader(cleaned))
             val document = documentBuilder.parse(inputSource)
 
+            // Remove all whitespace-only text nodes
+            removeWhitespaceNodes(document.documentElement)
+
             // Format XML with pretty print
             val transformerFactory = TransformerFactory.newInstance()
             val transformer = transformerFactory.newTransformer()
             transformer.setOutputProperty(OutputKeys.INDENT, "yes")
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2")
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8")
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no")
 
             val domSource = DOMSource(document)
             val stringWriter = StringWriter()
@@ -112,6 +116,27 @@ class ClaudeService(private val config: ClaudeConfig) {
         } catch (e: Exception) {
             "Некорректный XML: ${e.message}"
         }
+    }
+
+    /**
+     * Recursively removes whitespace-only text nodes from XML
+     */
+    private fun removeWhitespaceNodes(node: org.w3c.dom.Node) {
+        val nodesToRemove = mutableListOf<org.w3c.dom.Node>()
+        val nodeList = node.childNodes
+
+        for (i in 0 until nodeList.length) {
+            val child = nodeList.item(i)
+            if (child.nodeType == org.w3c.dom.Node.TEXT_NODE) {
+                if (child.textContent.isBlank()) {
+                    nodesToRemove.add(child)
+                }
+            } else if (child.nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+                removeWhitespaceNodes(child)
+            }
+        }
+
+        nodesToRemove.forEach { node.removeChild(it) }
     }
 
     /**
