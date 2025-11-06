@@ -1,6 +1,7 @@
 package com.example
 
 import com.example.routes.chatRoutes
+import com.example.services.ChatSessionManager
 import com.example.services.ClaudeService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -9,6 +10,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting(claudeService: ClaudeService) {
+    // Создаем единственный экземпляр ChatSessionManager для всего приложения
+    val sessionManager = ChatSessionManager()
+
     routing {
         // Главная страница - перенаправление на index.html
         get("/") {
@@ -16,7 +20,7 @@ fun Application.configureRouting(claudeService: ClaudeService) {
         }
 
         // API роуты для чата
-        chatRoutes(claudeService)
+        chatRoutes(claudeService, sessionManager)
 
         // Статические файлы (HTML, CSS, JS)
         staticResources("/", "static")

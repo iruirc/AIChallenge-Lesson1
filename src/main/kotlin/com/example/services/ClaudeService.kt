@@ -32,22 +32,30 @@ class ClaudeService(private val config: ClaudeConfig) {
         }
     }
 
-    suspend fun sendMessage(userMessage: String, format: ResponseFormat = ResponseFormat.PLAIN_TEXT): String {
+    suspend fun sendMessage(
+        userMessage: String,
+        format: ResponseFormat = ResponseFormat.PLAIN_TEXT,
+        messageHistory: List<ClaudeMessage> = emptyList()
+    ): String {
         return try {
             logger.info("Sending message to Claude API: $userMessage")
             logger.info("Response format: $format")
+            logger.info("Message history size: ${messageHistory.size}")
 
             val enhancedMessage = formatter.enhanceMessage(userMessage, format)
+
+            // Строим список сообщений: история + новое сообщение пользователя
+            val messages = messageHistory.toMutableList().apply {
+                add(ClaudeMessage(
+                    role = MessageRole.USER,
+                    content = enhancedMessage
+                ))
+            }
 
             val claudeRequest = ClaudeRequest(
                 model = config.model,
                 maxTokens = config.maxTokens,
-                messages = listOf(
-                    ClaudeMessage(
-                        role = MessageRole.USER,
-                        content = enhancedMessage
-                    )
-                ),
+                messages = messages,
                 temperature = config.temperature
             )
 

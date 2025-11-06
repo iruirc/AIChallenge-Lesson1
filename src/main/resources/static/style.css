@@ -21,6 +21,50 @@ body {
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
 }
 
+/* Заголовок с кнопкой нового чата */
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chat-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.new-chat-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.new-chat-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.new-chat-button:active {
+    transform: translateY(0);
+}
+
+.new-chat-button svg {
+    flex-shrink: 0;
+}
+
 /* Область переписки (80% высоты) */
 .messages-container {
     flex: 4;

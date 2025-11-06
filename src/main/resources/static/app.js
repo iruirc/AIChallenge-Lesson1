@@ -11,6 +11,7 @@ const formatSelect = document.getElementById('formatSelect');
 
 // Состояние
 let isLoading = false;
+let currentSessionId = null; // ID текущей сессии чата
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,6 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = 'auto';
         messageInput.style.height = messageInput.scrollHeight + 'px';
     });
+
+    // Обработчик кнопки "Новый чат"
+    const newChatButton = document.getElementById('newChatButton');
+    if (newChatButton) {
+        newChatButton.addEventListener('click', startNewChat);
+    }
 });
 
 // Основная функция отправки сообщения
@@ -64,13 +71,24 @@ async function handleSendMessage() {
         // Получаем выбранный формат
         const format = formatSelect.value;
 
+        // Создаем тело запроса с sessionId (если есть)
+        const requestBody = {
+            message,
+            format
+        };
+
+        // Добавляем sessionId если он существует
+        if (currentSessionId) {
+            requestBody.sessionId = currentSessionId;
+        }
+
         // Отправляем запрос к API с таймаутом
         const response = await fetchWithTimeout(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message, format }),
+            body: JSON.stringify(requestBody),
         }, REQUEST_TIMEOUT);
 
         // Удаляем индикатор загрузки
@@ -84,6 +102,12 @@ async function handleSendMessage() {
 
         // Проверяем наличие ответа
         if (data.response) {
+            // Сохраняем sessionId из ответа
+            if (data.sessionId) {
+                currentSessionId = data.sessionId;
+                console.log('Session ID:', currentSessionId);
+            }
+
             addMessage(data.response, 'assistant');
             updateStatus('');
         } else {
@@ -190,4 +214,35 @@ function fetchWithTimeout(url, options, timeout) {
             setTimeout(() => reject(new Error('AbortError')), timeout)
         )
     ]);
+}
+
+// Создание нового чата
+function startNewChat() {
+    if (isLoading) {
+        return;
+    }
+
+    // Сбрасываем sessionId
+    currentSessionId = null;
+    console.log('Начат новый чат');
+
+    // Очищаем все сообщения
+    messagesContainer.innerHTML = '';
+
+    // Показываем приветственное сообщение
+    const welcomeDiv = document.createElement('div');
+    welcomeDiv.className = 'welcome-message';
+    welcomeDiv.innerHTML = `
+        <h2>👋 Добро пожаловать в чат с Claude!</h2>
+        <p>Задайте свой вопрос ниже</p>
+    `;
+    messagesContainer.appendChild(welcomeDiv);
+
+    // Очищаем поле ввода
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
+
+    // Очищаем статус
+    updateStatus('Начат новый чат');
+    setTimeout(() => updateStatus(''), 2000);
 }
