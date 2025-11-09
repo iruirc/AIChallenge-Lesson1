@@ -194,7 +194,7 @@ CLAUDE_API_KEY=sk-ant-api03-ваш_ключ_здесь
 
 # Опционально: Настройки модели
 CLAUDE_MODEL=claude-haiku-4-5-20251001
-CLAUDE_MAX_TOKENS=1024
+CLAUDE_MAX_TOKENS=64000
 CLAUDE_TEMPERATURE=1.0
 ```
 
