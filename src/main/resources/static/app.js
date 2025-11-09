@@ -2,6 +2,7 @@
 const API_URL = '/chat';
 const SESSIONS_URL = '/sessions';
 const AGENTS_URL = '/agents';
+const MODELS_URL = '/models';
 const REQUEST_TIMEOUT = 30000; // 30 секунд
 
 // DOM элементы
@@ -10,6 +11,7 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const statusElement = document.getElementById('status');
 const formatSelect = document.getElementById('formatSelect');
+const modelSelect = document.getElementById('modelSelect');
 const sessionsList = document.getElementById('sessionsList');
 const newChatButton = document.getElementById('newChatButton');
 const clearChatButton = document.getElementById('clearChatButton');
@@ -24,6 +26,7 @@ let isLoading = false;
 let currentSessionId = null; // ID текущей сессии чата
 let sessions = []; // Список всех сессий
 let agents = []; // Список всех агентов
+let models = []; // Список всех доступных моделей
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,8 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Загружаем список сессий
+    // Загружаем список сессий и моделей
     loadSessions();
+    loadModels();
 });
 
 // Основная функция отправки сообщения
@@ -111,13 +115,15 @@ async function handleSendMessage() {
     updateStatus('Отправка запроса...');
 
     try {
-        // Получаем выбранный формат
+        // Получаем выбранный формат и модель
         const format = formatSelect.value;
+        const model = modelSelect.value;
 
         // Создаем тело запроса с sessionId (если есть)
         const requestBody = {
             message,
-            format
+            format,
+            model
         };
 
         // Добавляем sessionId если он существует
@@ -249,6 +255,7 @@ function setLoading(loading) {
     sendButton.disabled = loading;
     messageInput.disabled = loading;
     formatSelect.disabled = loading;
+    modelSelect.disabled = loading;
 }
 
 // Fetch с таймаутом
@@ -591,4 +598,42 @@ async function startAgentSession(agentId) {
     } finally {
         setLoading(false);
     }
+}
+
+// Загрузка списка доступных моделей
+async function loadModels() {
+    try {
+        const response = await fetch(MODELS_URL);
+        if (!response.ok) {
+            throw new Error('Failed to load models');
+        }
+
+        const data = await response.json();
+        models = data.models || [];
+
+        renderModelsList();
+    } catch (error) {
+        console.error('Error loading models:', error);
+    }
+}
+
+// Отрисовка списка моделей в селекторе
+function renderModelsList() {
+    if (models.length === 0) {
+        return;
+    }
+
+    modelSelect.innerHTML = '';
+    models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.id;
+        option.textContent = model.displayName;
+
+        // Делаем Haiku 4.5 моделью по умолчанию
+        if (model.id === 'claude-haiku-4-5-20251001') {
+            option.selected = true;
+        }
+
+        modelSelect.appendChild(option);
+    });
 }

@@ -32,12 +32,13 @@ fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionMa
                     agentManager.getAgent(agentId)?.systemPrompt
                 }
 
-                // Отправляем сообщение в Claude API с историей и system prompt
+                // Отправляем сообщение в Claude API с историей, system prompt и моделью
                 val claudeResponse = claudeService.sendMessage(
                     userMessage = request.message,
                     format = request.format,
                     messageHistory = messageHistory,
-                    systemPrompt = systemPrompt
+                    systemPrompt = systemPrompt,
+                    model = request.model
                 )
 
                 // Сохраняем сообщение пользователя в историю (без форматирования)
@@ -208,7 +209,8 @@ fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionMa
                     userMessage = "Привет",
                     format = ResponseFormat.PLAIN_TEXT,
                     messageHistory = emptyList(),
-                    systemPrompt = agent.systemPrompt
+                    systemPrompt = agent.systemPrompt,
+                    model = null
                 )
 
                 // Сохраняем приветственное сообщение пользователя
@@ -228,6 +230,20 @@ fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionMa
                 call.respond(
                     HttpStatusCode.InternalServerError,
                     mapOf("error" to "Failed to start agent session: ${e.message}")
+                )
+            }
+        }
+    }
+
+    // Получить список доступных моделей
+    route("/models") {
+        get {
+            try {
+                call.respond(ModelsListResponse(models = AvailableModels.models))
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    mapOf("error" to "Failed to get models: ${e.message}")
                 )
             }
         }
