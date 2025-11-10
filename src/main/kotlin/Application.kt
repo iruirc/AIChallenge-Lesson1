@@ -53,5 +53,5 @@ fun Application.module() {
     }
 
     // Конфигурация роутинга
-    configureRouting(claudeService)
+    configureRouting(claudeService, claudeConfig)
 }

@@ -11,3 +11,11 @@ data class ChatRequest(
     val temperature: Double? = null, // Температура для генерации ответа (0.0 - 1.0)
     val maxTokens: Int? = null // Максимальное количество токенов в ответе
 )
+
+@Serializable
+data class ConfigResponse(
+    val model: String,
+    val temperature: Double,
+    val maxTokens: Int,
+    val format: String
+)

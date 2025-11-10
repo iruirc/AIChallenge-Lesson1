@@ -3,6 +3,7 @@ const API_URL = '/chat';
 const SESSIONS_URL = '/sessions';
 const AGENTS_URL = '/agents';
 const MODELS_URL = '/models';
+const CONFIG_URL = '/config';
 const REQUEST_TIMEOUT = 300000; // 300 секунд (5 минут)
 
 // DOM элементы
@@ -38,8 +39,9 @@ let agents = []; // Список всех агентов
 let models = []; // Список всех доступных моделей
 
 // Настройки (текущие активные значения)
+// Дефолтные значения будут заменены на значения из конфигурации бэкенда при загрузке
 let currentSettings = {
-    model: 'claude-haiku-4-5-20251001',
+    model: 'claude-haiku-4-5-20251001', // Fallback значение
     temperature: 1.0,
     maxTokens: 4096,
     format: 'PLAIN_TEXT'
@@ -141,7 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Загружаем список сессий и моделей
+    // Загружаем конфигурацию, список сессий и моделей
+    loadConfig();
     loadSessions();
     loadModels();
 });
@@ -662,6 +665,29 @@ async function startAgentSession(agentId) {
     }
 }
 
+// Загрузка конфигурации с бэкенда
+async function loadConfig() {
+    try {
+        const response = await fetch(CONFIG_URL);
+        if (!response.ok) {
+            throw new Error('Failed to load config');
+        }
+
+        const data = await response.json();
+
+        // Обновляем текущие настройки из конфигурации бэкенда
+        currentSettings.model = data.model;
+        currentSettings.temperature = data.temperature;
+        currentSettings.maxTokens = data.maxTokens;
+        currentSettings.format = data.format;
+
+        console.log('Конфигурация загружена с бэкенда:', currentSettings);
+    } catch (error) {
+        console.error('Error loading config:', error);
+        // Если не удалось загрузить конфигурацию, используем дефолтные значения
+    }
+}
+
 // Загрузка списка доступных моделей
 async function loadModels() {
     try {
@@ -691,8 +717,8 @@ function renderModelsList() {
         option.value = model.id;
         option.textContent = model.displayName;
 
-        // Делаем Haiku 4.5 моделью по умолчанию
-        if (model.id === 'claude-haiku-4-5-20251001') {
+        // Выбираем модель из currentSettings (загруженную с бэкенда)
+        if (model.id === currentSettings.model) {
             option.selected = true;
         }
 

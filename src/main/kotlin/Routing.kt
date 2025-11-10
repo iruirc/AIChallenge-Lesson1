@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.config.ClaudeConfig
 import com.example.routes.chatRoutes
 import com.example.services.AgentManager
 import com.example.services.ChatSessionManager
@@ -10,7 +11,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(claudeService: ClaudeService) {
+fun Application.configureRouting(claudeService: ClaudeService, claudeConfig: ClaudeConfig) {
     // Создаем единственные экземпляры менеджеров для всего приложения
     val sessionManager = ChatSessionManager()
     val agentManager = AgentManager()
@@ -22,7 +23,7 @@ fun Application.configureRouting(claudeService: ClaudeService) {
         }
 
         // API роуты для чата
-        chatRoutes(claudeService, sessionManager, agentManager)
+        chatRoutes(claudeService, sessionManager, agentManager, claudeConfig)
 
         // Статические файлы (HTML, CSS, JS)
         staticResources("/", "static")

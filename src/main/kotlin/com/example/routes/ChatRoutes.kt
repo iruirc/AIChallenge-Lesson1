@@ -1,5 +1,6 @@
 package com.example.routes
 
+import com.example.config.ClaudeConfig
 import com.example.models.*
 import com.example.services.AgentManager
 import com.example.services.ChatSessionManager
@@ -10,7 +11,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionManager, agentManager: AgentManager) {
+fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionManager, agentManager: AgentManager, claudeConfig: ClaudeConfig) {
     route("/chat") {
         post {
             try {
@@ -246,6 +247,25 @@ fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionMa
                 call.respond(
                     HttpStatusCode.InternalServerError,
                     mapOf("error" to "Failed to get models: ${e.message}")
+                )
+            }
+        }
+    }
+
+    // Получить текущую конфигурацию
+    route("/config") {
+        get {
+            try {
+                call.respond(ConfigResponse(
+                    model = claudeConfig.model,
+                    temperature = claudeConfig.temperature,
+                    maxTokens = claudeConfig.maxTokens,
+                    format = "PLAIN_TEXT" // Дефолтный формат
+                ))
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    mapOf("error" to "Failed to get config: ${e.message}")
                 )
             }
         }
