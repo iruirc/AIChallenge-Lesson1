@@ -12,6 +12,8 @@ const sendButton = document.getElementById('sendButton');
 const statusElement = document.getElementById('status');
 const formatSelect = document.getElementById('formatSelect');
 const modelSelect = document.getElementById('modelSelect');
+const temperatureSlider = document.getElementById('temperatureSlider');
+const temperatureValue = document.getElementById('temperatureValue');
 const sessionsList = document.getElementById('sessionsList');
 const newChatButton = document.getElementById('newChatButton');
 const clearChatButton = document.getElementById('clearChatButton');
@@ -46,6 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = 'auto';
         messageInput.style.height = messageInput.scrollHeight + 'px';
     });
+
+    // Обработчик изменения температуры
+    if (temperatureSlider) {
+        temperatureSlider.addEventListener('input', (e) => {
+            temperatureValue.textContent = parseFloat(e.target.value).toFixed(1);
+        });
+    }
 
     // Обработчик кнопки "Новый чат"
     if (newChatButton) {
@@ -115,15 +124,17 @@ async function handleSendMessage() {
     updateStatus('Отправка запроса...');
 
     try {
-        // Получаем выбранный формат и модель
+        // Получаем выбранный формат, модель и температуру
         const format = formatSelect.value;
         const model = modelSelect.value;
+        const temperature = parseFloat(temperatureSlider.value);
 
         // Создаем тело запроса с sessionId (если есть)
         const requestBody = {
             message,
             format,
-            model
+            model,
+            temperature
         };
 
         // Добавляем sessionId если он существует

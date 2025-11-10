@@ -32,13 +32,14 @@ fun Route.chatRoutes(claudeService: ClaudeService, sessionManager: ChatSessionMa
                     agentManager.getAgent(agentId)?.systemPrompt
                 }
 
-                // Отправляем сообщение в Claude API с историей, system prompt и моделью
+                // Отправляем сообщение в Claude API с историей, system prompt, моделью и температурой
                 val claudeResponse = claudeService.sendMessage(
                     userMessage = request.message,
                     format = request.format,
                     messageHistory = messageHistory,
                     systemPrompt = systemPrompt,
-                    model = request.model
+                    model = request.model,
+                    temperature = request.temperature
                 )
 
                 // Сохраняем сообщение пользователя в историю (без форматирования)

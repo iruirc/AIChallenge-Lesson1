@@ -43,7 +43,8 @@ class ClaudeService(private val config: ClaudeConfig) {
         format: ResponseFormat = ResponseFormat.PLAIN_TEXT,
         messageHistory: List<ClaudeMessage> = emptyList(),
         systemPrompt: String? = null,
-        model: String? = null
+        model: String? = null,
+        temperature: Double? = null
     ): String {
         return try {
             logger.info("Sending message to Claude API: $userMessage")
@@ -64,15 +65,18 @@ class ClaudeService(private val config: ClaudeConfig) {
             // Используем модель из параметра или модель по умолчанию из конфигурации
             val selectedModel = model ?: config.model
 
+            // Используем температуру из параметра или температуру по умолчанию из конфигурации
+            val selectedTemperature = temperature ?: config.temperature
+
             val claudeRequest = ClaudeRequest(
                 model = selectedModel,
                 maxTokens = config.maxTokens,
                 messages = messages,
-                temperature = config.temperature,
+                temperature = selectedTemperature,
                 system = systemPrompt
             )
 
-            logger.info("Claude Request: model=$selectedModel, maxTokens=${config.maxTokens}")
+            logger.info("Claude Request: model=$selectedModel, maxTokens=${config.maxTokens}, temperature=$selectedTemperature")
 
             val httpResponse: HttpResponse = client.post(config.apiUrl) {
                 header("x-api-key", config.apiKey)
