@@ -26,6 +26,8 @@ const cancelSettingsButton = document.getElementById('cancelSettingsButton');
 const modalModelSelect = document.getElementById('modalModelSelect');
 const modalTemperatureSlider = document.getElementById('modalTemperatureSlider');
 const modalTemperatureValue = document.getElementById('modalTemperatureValue');
+const modalMaxTokensSlider = document.getElementById('modalMaxTokensSlider');
+const modalMaxTokensValue = document.getElementById('modalMaxTokensValue');
 const modalFormatSelect = document.getElementById('modalFormatSelect');
 
 // Состояние
@@ -39,6 +41,7 @@ let models = []; // Список всех доступных моделей
 let currentSettings = {
     model: 'claude-haiku-4-5-20251001',
     temperature: 1.0,
+    maxTokens: 4096,
     format: 'PLAIN_TEXT'
 };
 
@@ -65,6 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalTemperatureSlider) {
         modalTemperatureSlider.addEventListener('input', (e) => {
             modalTemperatureValue.textContent = parseFloat(e.target.value).toFixed(1);
+        });
+    }
+
+    // Обработчик изменения максимального количества токенов в модальном окне
+    if (modalMaxTokensSlider) {
+        modalMaxTokensSlider.addEventListener('input', (e) => {
+            modalMaxTokensValue.textContent = e.target.value;
         });
     }
 
@@ -169,13 +179,15 @@ async function handleSendMessage() {
         const format = currentSettings.format;
         const model = currentSettings.model;
         const temperature = currentSettings.temperature;
+        const maxTokens = currentSettings.maxTokens;
 
         // Создаем тело запроса с sessionId (если есть)
         const requestBody = {
             message,
             format,
             model,
-            temperature
+            temperature,
+            maxTokens
         };
 
         // Добавляем sessionId если он существует
@@ -698,6 +710,8 @@ function openSettingsModal() {
     modalModelSelect.value = currentSettings.model;
     modalTemperatureSlider.value = currentSettings.temperature;
     modalTemperatureValue.textContent = currentSettings.temperature.toFixed(1);
+    modalMaxTokensSlider.value = currentSettings.maxTokens;
+    modalMaxTokensValue.textContent = currentSettings.maxTokens;
     modalFormatSelect.value = currentSettings.format;
 
     settingsModal.classList.add('active');
@@ -713,6 +727,7 @@ function saveSettings() {
     // Сохраняем новые настройки
     currentSettings.model = modalModelSelect.value;
     currentSettings.temperature = parseFloat(modalTemperatureSlider.value);
+    currentSettings.maxTokens = parseInt(modalMaxTokensSlider.value);
     currentSettings.format = modalFormatSelect.value;
 
     console.log('Настройки сохранены:', currentSettings);

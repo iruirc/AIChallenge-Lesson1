@@ -134,6 +134,24 @@
                         <span>Креативный</span>
                     </div>
                 </div>
+                <div class="max-tokens-input">
+                    <label for="modalMaxTokensInput">
+                        Максимальное кол-во токенов: <span id="modalMaxTokensValue">4096</span>
+                    </label>
+                    <input
+                        type="range"
+                        id="modalMaxTokensSlider"
+                        min="1024"
+                        max="65536"
+                        step="1024"
+                        value="4096"
+                        class="slider"
+                    >
+                    <div class="max-tokens-labels">
+                        <span>1024</span>
+                        <span>65536</span>
+                    </div>
+                </div>
                 <div class="format-selector">
                     <label for="modalFormatSelect">Формат ответа:</label>
                     <select id="modalFormatSelect" class="format-select">
