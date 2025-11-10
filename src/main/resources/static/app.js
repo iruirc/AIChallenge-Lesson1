@@ -10,10 +10,6 @@ const messagesContainer = document.getElementById('messagesContainer');
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const statusElement = document.getElementById('status');
-const formatSelect = document.getElementById('formatSelect');
-const modelSelect = document.getElementById('modelSelect');
-const temperatureSlider = document.getElementById('temperatureSlider');
-const temperatureValue = document.getElementById('temperatureValue');
 const sessionsList = document.getElementById('sessionsList');
 const newChatButton = document.getElementById('newChatButton');
 const clearChatButton = document.getElementById('clearChatButton');
@@ -22,6 +18,15 @@ const agentsButton = document.getElementById('agentsButton');
 const agentModal = document.getElementById('agentModal');
 const closeModal = document.getElementById('closeModal');
 const agentsListElement = document.getElementById('agentsList');
+const settingsButton = document.getElementById('settingsButton');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettingsModal = document.getElementById('closeSettingsModal');
+const saveSettingsButton = document.getElementById('saveSettingsButton');
+const cancelSettingsButton = document.getElementById('cancelSettingsButton');
+const modalModelSelect = document.getElementById('modalModelSelect');
+const modalTemperatureSlider = document.getElementById('modalTemperatureSlider');
+const modalTemperatureValue = document.getElementById('modalTemperatureValue');
+const modalFormatSelect = document.getElementById('modalFormatSelect');
 
 // Состояние
 let isLoading = false;
@@ -29,6 +34,13 @@ let currentSessionId = null; // ID текущей сессии чата
 let sessions = []; // Список всех сессий
 let agents = []; // Список всех агентов
 let models = []; // Список всех доступных моделей
+
+// Настройки (текущие активные значения)
+let currentSettings = {
+    model: 'claude-haiku-4-5-20251001',
+    temperature: 1.0,
+    format: 'PLAIN_TEXT'
+};
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,10 +61,39 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = messageInput.scrollHeight + 'px';
     });
 
-    // Обработчик изменения температуры
-    if (temperatureSlider) {
-        temperatureSlider.addEventListener('input', (e) => {
-            temperatureValue.textContent = parseFloat(e.target.value).toFixed(1);
+    // Обработчик изменения температуры в модальном окне
+    if (modalTemperatureSlider) {
+        modalTemperatureSlider.addEventListener('input', (e) => {
+            modalTemperatureValue.textContent = parseFloat(e.target.value).toFixed(1);
+        });
+    }
+
+    // Обработчик кнопки "Настройки"
+    if (settingsButton) {
+        settingsButton.addEventListener('click', openSettingsModal);
+    }
+
+    // Обработчик закрытия модального окна настроек
+    if (closeSettingsModal) {
+        closeSettingsModal.addEventListener('click', closeSettingsModalFunc);
+    }
+
+    // Обработчик кнопки "Сохранить"
+    if (saveSettingsButton) {
+        saveSettingsButton.addEventListener('click', saveSettings);
+    }
+
+    // Обработчик кнопки "Отменить"
+    if (cancelSettingsButton) {
+        cancelSettingsButton.addEventListener('click', closeSettingsModalFunc);
+    }
+
+    // Закрытие модального окна настроек при клике вне его
+    if (settingsModal) {
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                closeSettingsModalFunc();
+            }
         });
     }
 
@@ -124,10 +165,10 @@ async function handleSendMessage() {
     updateStatus('Отправка запроса...');
 
     try {
-        // Получаем выбранный формат, модель и температуру
-        const format = formatSelect.value;
-        const model = modelSelect.value;
-        const temperature = parseFloat(temperatureSlider.value);
+        // Используем текущие настройки
+        const format = currentSettings.format;
+        const model = currentSettings.model;
+        const temperature = currentSettings.temperature;
 
         // Создаем тело запроса с sessionId (если есть)
         const requestBody = {
@@ -265,8 +306,6 @@ function setLoading(loading) {
     isLoading = loading;
     sendButton.disabled = loading;
     messageInput.disabled = loading;
-    formatSelect.disabled = loading;
-    modelSelect.disabled = loading;
 }
 
 // Fetch с таймаутом
@@ -634,7 +673,7 @@ function renderModelsList() {
         return;
     }
 
-    modelSelect.innerHTML = '';
+    modalModelSelect.innerHTML = '';
     models.forEach(model => {
         const option = document.createElement('option');
         option.value = model.id;
@@ -645,6 +684,43 @@ function renderModelsList() {
             option.selected = true;
         }
 
-        modelSelect.appendChild(option);
+        modalModelSelect.appendChild(option);
     });
+}
+
+// Открытие модального окна настроек
+function openSettingsModal() {
+    if (isLoading) {
+        return;
+    }
+
+    // Загружаем текущие настройки в модальное окно
+    modalModelSelect.value = currentSettings.model;
+    modalTemperatureSlider.value = currentSettings.temperature;
+    modalTemperatureValue.textContent = currentSettings.temperature.toFixed(1);
+    modalFormatSelect.value = currentSettings.format;
+
+    settingsModal.classList.add('active');
+}
+
+// Закрытие модального окна настроек
+function closeSettingsModalFunc() {
+    settingsModal.classList.remove('active');
+}
+
+// Сохранение настроек
+function saveSettings() {
+    // Сохраняем новые настройки
+    currentSettings.model = modalModelSelect.value;
+    currentSettings.temperature = parseFloat(modalTemperatureSlider.value);
+    currentSettings.format = modalFormatSelect.value;
+
+    console.log('Настройки сохранены:', currentSettings);
+
+    // Закрываем модальное окно
+    closeSettingsModalFunc();
+
+    // Показываем уведомление
+    updateStatus('Настройки сохранены', 'success');
+    setTimeout(() => updateStatus(''), 2000);
 }

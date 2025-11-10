@@ -356,6 +356,42 @@ body {
     justify-content: center;
 }
 
+/* Settings button wrapper */
+.settings-button-wrapper {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Settings button */
+.settings-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.settings-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.settings-button:active {
+    transform: translateY(0);
+}
+
+.settings-button svg {
+    flex-shrink: 0;
+}
+
 /* Селектор формата */
 .format-selector {
     margin-bottom: 12px;
@@ -708,6 +744,60 @@ body {
     font-size: 14px;
     color: #6c757d;
     line-height: 1.4;
+}
+
+/* Settings modal content */
+.settings-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.save-button,
+.cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.save-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.save-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.save-button:active {
+    transform: translateY(0);
+}
+
+.cancel-button {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+.cancel-button:hover {
+    background: #e9ecef;
+}
+
+.cancel-button:active {
+    background: #dee2e6;
 }
 
 /* Адаптивность */

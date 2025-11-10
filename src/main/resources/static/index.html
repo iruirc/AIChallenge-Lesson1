@@ -63,37 +63,14 @@
 
             <!-- Область ввода -->
             <div class="input-container">
-                <div class="format-selector">
-                    <label for="modelSelect">Модель:</label>
-                    <select id="modelSelect" class="format-select">
-                        <option value="claude-haiku-4-5-20251001" selected>Claude Haiku 4.5</option>
-                    </select>
-                </div>
-                <div class="temperature-slider">
-                    <label for="temperatureSlider">
-                        Температура: <span id="temperatureValue">1.0</span>
-                    </label>
-                    <input
-                        type="range"
-                        id="temperatureSlider"
-                        min="0"
-                        max="1"
-                        step="0.1"
-                        value="1.0"
-                        class="slider"
-                    >
-                    <div class="temperature-labels">
-                        <span>Точный</span>
-                        <span>Креативный</span>
-                    </div>
-                </div>
-                <div class="format-selector">
-                    <label for="formatSelect">Формат ответа:</label>
-                    <select id="formatSelect" class="format-select">
-                        <option value="PLAIN_TEXT" selected>Обычный текст</option>
-                        <option value="JSON">JSON</option>
-                        <option value="XML">XML</option>
-                    </select>
+                <div class="settings-button-wrapper">
+                    <button id="settingsButton" class="settings-button" title="Настройки">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Настройки
+                    </button>
                 </div>
                 <div class="input-wrapper">
                     <textarea
@@ -121,6 +98,54 @@
             </div>
             <div id="agentsList" class="agents-list">
                 <div class="agents-loading">Загрузка агентов...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для настроек -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Настройки</h3>
+                <button id="closeSettingsModal" class="close-button">&times;</button>
+            </div>
+            <div class="settings-content">
+                <div class="format-selector">
+                    <label for="modalModelSelect">Модель:</label>
+                    <select id="modalModelSelect" class="format-select">
+                        <option value="claude-haiku-4-5-20251001" selected>Claude Haiku 4.5</option>
+                    </select>
+                </div>
+                <div class="temperature-slider">
+                    <label for="modalTemperatureSlider">
+                        Температура: <span id="modalTemperatureValue">1.0</span>
+                    </label>
+                    <input
+                        type="range"
+                        id="modalTemperatureSlider"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value="1.0"
+                        class="slider"
+                    >
+                    <div class="temperature-labels">
+                        <span>Точный</span>
+                        <span>Креативный</span>
+                    </div>
+                </div>
+                <div class="format-selector">
+                    <label for="modalFormatSelect">Формат ответа:</label>
+                    <select id="modalFormatSelect" class="format-select">
+                        <option value="PLAIN_TEXT" selected>Обычный текст</option>
+                        <option value="JSON">JSON</option>
+                        <option value="XML">XML</option>
+                    </select>
+                </div>
+                <div class="settings-actions">
+                    <button id="cancelSettingsButton" class="cancel-button">Отменить</button>
+                    <button id="saveSettingsButton" class="save-button">Сохранить</button>
+                </div>
             </div>
         </div>
     </div>
